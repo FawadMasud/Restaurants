@@ -15,9 +15,6 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
-
-    let dish = Dish()
-
     
     var body: some View {
         NavigationView {
@@ -31,6 +28,17 @@ struct ContentView: View {
                     }
                 }
                 .onDelete(perform: deleteItems)
+                .task {
+                    let apiService = RestaurantsAPISerivce()
+                    do {
+                        let arr = try await apiService.getAllRestaurants()
+                        print(arr)
+                    } catch {
+                        print(error)
+                    }
+                    
+                    
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -43,6 +51,7 @@ struct ContentView: View {
                 }
             }
             Text("Select an item")
+               
         }
     }
 
