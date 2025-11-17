@@ -11,7 +11,7 @@ import Foundation
 
 class RestaurantsAPISerivce: ObservableObject {
     
-    private let baseUrl = "https://fakerestaurantapi.runasp.net/api/"
+    private let baseUrl = "https://fakerestaurantapi.runasp.net/api/."
     
     private var headers:[String:String] {
         ["":""]
@@ -28,7 +28,7 @@ class RestaurantsAPISerivce: ObservableObject {
         
         switch env {
         case .production:
-            apiKey = Keys.GoogleApiKeyProd
+            apiKey = Keys.GoogleApiKeyProd // Keys file added to gitignore
         case .debug:
             apiKey = Keys.GoogleApiKeySandbox
         default:
