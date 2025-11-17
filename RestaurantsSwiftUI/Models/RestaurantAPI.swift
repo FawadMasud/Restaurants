@@ -5,7 +5,7 @@
 //  Created by Fawad Masud on 14/11/2025.
 //
 
-struct Restaurant:Codable {
+struct RestaurantAPI:Codable {
     
     let address:String
     let parkingLot:Bool
@@ -13,3 +13,4 @@ struct Restaurant:Codable {
     let restaurantName:String
     let type:String
 }
+

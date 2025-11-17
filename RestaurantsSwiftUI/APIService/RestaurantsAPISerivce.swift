@@ -8,6 +8,7 @@
 import Foundation
 
 
+
 class RestaurantsAPISerivce: ObservableObject {
     
     private let baseUrl = "https://fakerestaurantapi.runasp.net/api/"
@@ -20,6 +21,22 @@ class RestaurantsAPISerivce: ObservableObject {
         
         let urlString = baseUrl + method
         
+        var apiKey:String
+        
+        let env = EnvironmentManager.shared.current
+        
+        
+        switch env {
+        case .production:
+            apiKey = Keys.GoogleApiKeyProd
+        case .debug:
+            apiKey = Keys.GoogleApiKeySandbox
+        default:
+            apiKey = Keys.GoogleApiKeySandbox
+        }
+        
+        print(apiKey)
+        
         if let url = URL(string: urlString)
         {
             return url
@@ -30,7 +47,7 @@ class RestaurantsAPISerivce: ObservableObject {
         }
     }
     
-    func getAllRestaurants() async throws -> [Restaurant] {
+    func getAllRestaurants() async throws -> [RestaurantAPI] {
         
         
         guard let url = prepareUrl(method: RESTAURANT) else
@@ -38,7 +55,7 @@ class RestaurantsAPISerivce: ObservableObject {
             throw URLError(.badURL)
         }
         
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
         
         let (data,response) = try await URLSession.shared.data(for: request)
         
@@ -47,7 +64,7 @@ class RestaurantsAPISerivce: ObservableObject {
                   throw URLError(.badServerResponse)
               }
         
-        return try JSONDecoder().decode([Restaurant].self, from: data)
+        return try JSONDecoder().decode([RestaurantAPI].self, from: data)
         
         
     }
