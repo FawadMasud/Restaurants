@@ -34,10 +34,8 @@ struct ContentView: View {
                         let arr = try await apiService.getAllRestaurants()
                         print(arr)
                     } catch {
-                        print(error)
+                        print(error.localizedDescription)
                     }
-                    
-                    
                 }
             }
             .toolbar {

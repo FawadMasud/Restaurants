@@ -5,7 +5,7 @@
 //  Created by Fawad Masud on 17/11/2025.
 //
 
-enum Environment: String {
+enum Env: String {
     case development
     case debug
     case production
@@ -52,7 +52,7 @@ enum Environment: String {
 class EnvironmentManager {
     static let shared = EnvironmentManager()
     
-    var current: Environment {
+    var current: Env {
         #if DEBUG
         return .debug
         #elseif DEVELOPMENT

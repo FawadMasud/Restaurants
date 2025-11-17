@@ -16,7 +16,7 @@ class RestaurantsViewModel:ObservableObject {
     @Published var errorMessage:String?
     
     private let apiService = RestaurantsAPISerivce()
-    private let coreDataManager = CoreDataManager()
+    private let coreDataManager = CoreDataManager.shared
     
     func loadRestaurants() async {
         
@@ -25,25 +25,33 @@ class RestaurantsViewModel:ObservableObject {
         
         do {
             let apiRestaurants = try await apiService.getAllRestaurants()
+            
+            await saveRestaurantsToCoreData(_apiRestaurants: apiRestaurants)
+            
+            loadRestaurantsFromCoreData()
         }
         catch {
             errorMessage = error.localizedDescription
+            
+            loadRestaurantsFromCoreData()
         }
+        
+        isLoading = false
         
         
     }
     
     
-    private func saveRestaurantsToCoreData(_apiRestaurants:[RestaurantAPI]) {
+    private func saveRestaurantsToCoreData(_apiRestaurants:[RestaurantAPI]) async {
         
         let context = coreDataManager.viewContext
         
-        context.perform {
+        await context.perform {
             
             for _apiRestaurant in _apiRestaurants {
                 
                 let fetchRequest:NSFetchRequest<Restaurant> = Restaurant.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "restaurantID == %@", _apiRestaurant.restaurantID)
+                fetchRequest.predicate = NSPredicate(format: "restaurantID == %d", _apiRestaurant.restaurantID)
                 
                 let restaurant:Restaurant
                 
