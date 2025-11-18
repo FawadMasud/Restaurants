@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct RestaurantsSwiftUIApp: App {
-    let persistenceController = PersistenceController.shared
+   // let persistenceController = PersistenceController.shared
     let coreDataManager = CoreDataManager.shared
 
     var body: some Scene {

@@ -11,7 +11,7 @@ import Foundation
 
 class RestaurantsAPISerivce: ObservableObject {
     
-    private let baseUrl = "https://fakerestaurantapi.runasp.net/api/."
+    private let baseUrl = "https://fakerestaurantapi.runasp.net/api/"
     
     private var headers:[String:String] {
         ["":""]
@@ -25,7 +25,7 @@ class RestaurantsAPISerivce: ObservableObject {
         
         let env = EnvironmentManager.shared.current
         
-        
+        // Separating development and production
         switch env {
         case .production:
             apiKey = Keys.GoogleApiKeyProd // Keys file added to gitignore
@@ -34,7 +34,7 @@ class RestaurantsAPISerivce: ObservableObject {
         default:
             apiKey = Keys.GoogleApiKeySandbox
         }
-        
+                
         print(apiKey)
         
         if let url = URL(string: urlString)
@@ -67,6 +67,24 @@ class RestaurantsAPISerivce: ObservableObject {
         return try JSONDecoder().decode([RestaurantAPI].self, from: data)
         
         
+    }
+    
+    func getMenu(restaurantId:Int) async throws -> [MenuItemAPI] {
+        
+        guard let url = URL(string: "\(baseUrl)Restaurant/\(restaurantId)/Menu") else {
+            throw URLError(.badURL)
+        }
+        
+        let request = URLRequest(url:url)
+        
+        let (data,response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 .self else {
+                  throw URLError(.badServerResponse)
+              }
+        
+        return try JSONDecoder().decode([MenuItemAPI].self, from: data)
     }
     
     

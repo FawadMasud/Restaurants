@@ -30,11 +30,11 @@ struct RestaurantsListView: View {
                         
                         restaurant in
                         
-//                        NavigationLink(destination: nil ){
-//                            RestaurantRow(restaurant: restaurant)
-//                        }
+                        NavigationLink(destination: RestaurantDetailView(restaurant: restaurant) ){
+                            RestaurantRow(restaurant: restaurant)
+                        }
                         
-                        RestaurantRow(restaurant: restaurant)
+//                        RestaurantRow(restaurant: restaurant)
                     }
                 }
             }

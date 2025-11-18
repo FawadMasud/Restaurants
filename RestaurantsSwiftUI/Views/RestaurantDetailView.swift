@@ -8,11 +8,63 @@
 import SwiftUI
 
 struct RestaurantDetailView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    
+    let restaurant:Restaurant
+    @StateObject private var viewModel: RestaurantDetailViewModel
+    @State var showCart = false
+    
+    init(restaurant: Restaurant) {
+        self.restaurant = restaurant
+        _viewModel = StateObject(wrappedValue: RestaurantDetailViewModel(restaurant: restaurant))
     }
+    
+    var body: some View {
+        VStack {
+            
+            if viewModel.isLoading {
+                ProgressView("Loading Menu...")
+            } else if let error = viewModel.errorMessage {
+                ErrorView(error: error, retryAction: {
+                    Task{
+                        await viewModel.loadMenu()
+                    }
+                })
+            }
+            else
+            {
+                List{
+                    RestaurantHeader(restaurant: restaurant)
+                    
+                    ForEach(viewModel.menuItems)
+                    { item in
+                        MenuItemRow(item: item){
+                            
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle(restaurant.restaurantName ?? "")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        CartButton(itemCount: viewModel.cart.count) {
+                            showCart = true
+                        }
+                    }
+                }
+                .sheet(isPresented: $showCart) {
+                    CartView(viewModel: viewModel)
+                }
+                .task {
+                    await viewModel.loadMenu()
+                }
+    }
+    
+    
+    
 }
 
 #Preview {
-    RestaurantDetailView()
+ //   RestaurantDetailView()
 }
