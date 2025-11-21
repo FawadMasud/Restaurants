@@ -20,24 +20,24 @@ struct CartView: View {
                     EmptyCartView()
                 } else {
                     List {
-//                        ForEach(viewModel.cart, id: \.menuItemId) { item in
-//                            CartItemRow(item: item) { quantity in
-//                                viewModel.updateQuantity(for: item, quantity: quantity)
-//                            } onRemove: {
-//                                viewModel.removeFromCart(item: item)
-//                            }
-//                        }
+                        ForEach(viewModel.cart, id: \.menuItemID) { item in
+                            CartItemRow(item: item) { quantity in
+                                viewModel.updateQuantity(item: item, quantity: quantity)
+                            } onRemove: {
+                                viewModel.removeFromCart(item: item)
+                            }
+                        }
                         
-//                        Section {
-//                            HStack {
-//                                Text("Total")
-//                                    .font(.headline)
-//                                Spacer()
-//                                Text("$\(viewModel.totalAmount, specifier: "%.2f")")
-//                                    .font(.headline)
-//                                    .foregroundColor(.green)
-//                            }
-//                        }
+                        Section {
+                            HStack {
+                                Text("Total")
+                                    .font(.headline)
+                                Spacer()
+                                Text("$\(viewModel.totalAmount, specifier: "%.2f")")
+                                    .font(.headline)
+                                    .foregroundColor(.green)
+                            }
+                        }
                     }
                     
                     VStack(spacing: 16) {

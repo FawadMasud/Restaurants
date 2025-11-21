@@ -38,7 +38,7 @@ struct RestaurantDetailView: View {
                     ForEach(viewModel.menuItems)
                     { item in
                         MenuItemRow(item: item){
-                            
+                            viewModel.addToCart(item: item)
                         }
                     }
                 }

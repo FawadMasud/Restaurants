@@ -5,10 +5,9 @@
 //  Created by Fawad Masud on 18/11/2025.
 //
 
-struct OrderItem: Identifiable {
-    let id: String
-    let menuItemID: Int
+struct OrderItem: Codable {
+    let menuItemID: Int16
     let name: String
-    let quantity: Int
+    var quantity: Int
     let price: Double
 }

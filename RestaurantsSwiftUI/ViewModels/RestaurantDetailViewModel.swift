@@ -25,14 +25,18 @@ class RestaurantDetailViewModel: ObservableObject {
         self.restaurant = restaurant
     }
     
+    var totalAmount: Double {
+            cart.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
+        }
+    
     func loadMenu() async {
         
         isLoading = true
         errorMessage = nil
         
         do {
-//            let menuItems = try await apiService.getMenu(restaurantId: Int(restaurant.restaurantID))
-//            await saveMenuItemsToCoreData(_menuItems: menuItems)
+            let menuItems = try await apiService.getMenu(restaurantId: Int(restaurant.restaurantID))
+            await saveMenuItemsToCoreData(_menuItems: menuItems)
             loadMenuItemsFromCoreData()
         }
         catch
@@ -95,6 +99,33 @@ class RestaurantDetailViewModel: ObservableObject {
             //errorMessage = error.localizedDescription
             errorMessage = "Failed to load restaurants from local storage"
         }
+        
+    }
+    
+    func addToCart(item:MenuItem)
+    {
+        if let index = cart.firstIndex(where: {$0.menuItemID == item.itemID})
+        {
+            cart[index].quantity += 1
+        }
+        else
+        {
+            let orderItem = OrderItem(menuItemID: item.itemID,
+                                      name: item.itemName ?? "Name",
+                                      quantity: 1,
+                                      price: item.itemPrice)
+            cart.append(orderItem)
+            
+        }
+    }
+    
+    func removeFromCart(item:OrderItem)
+    {
+        cart.removeAll(where: {$0.menuItemID == item.menuItemID})
+    }
+    
+    func updateQuantity(item:OrderItem,quantity:Int)
+    {
         
     }
     
