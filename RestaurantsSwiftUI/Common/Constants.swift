@@ -6,3 +6,4 @@
 //
 
 let RESTAURANT = "Restaurant"
+let baseUrl = "https://fakerestaurantapi.runasp.net/api/"
