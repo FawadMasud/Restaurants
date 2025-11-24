@@ -7,16 +7,38 @@
 
 import Foundation
 import CoreData
+import Combine
 
 @MainActor
 class RestaurantsViewModel:ObservableObject {
     
     @Published var restaurants:[Restaurant] = []
+    @Published var filteredRestaurants: [Restaurant] = []
     @Published var isLoading = false
     @Published var errorMessage:String?
+    @Published var searchText = ""
+    @Published var selectedCuisine = "All"
+    @Published var selectedSort: SortOption = .name
+    @Published var showParkingOnly = false
     
     private let apiService = RestaurantsAPISerivce()
     private let coreDataManager = CoreDataManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    
+    enum SortOption: String, CaseIterable {
+            case name = "Name A-Z"
+            case type = "Cuisine"
+    }
+    
+    var availableCuisines: [String] {
+        let allTypes = restaurants.compactMap { $0.type }
+            return Array(Set(allTypes)).sorted()
+        }
+    
+    init() {
+            loadRestaurantsFromCoreData()
+            setupFiltering()
+        }
     
     func loadRestaurants() async {
         
@@ -92,5 +114,54 @@ class RestaurantsViewModel:ObservableObject {
             errorMessage = "Failed to load restaurants from local storage"
         }
     }
+    
+    private func setupFiltering() {
+            Publishers.CombineLatest4($searchText, $selectedCuisine, $selectedSort, $showParkingOnly)
+                .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+                .sink { [weak self] _ in
+                    self?.filterAndSortRestaurants()
+                }
+                .store(in: &cancellables)
+        }
+        
+        private func filterAndSortRestaurants() {
+            var filtered = restaurants
+            
+            // Apply search filter
+            if !searchText.isEmpty {
+                filtered = filtered.filter {
+                    $0.restaurantName?.localizedCaseInsensitiveContains(searchText) == true ||
+                    $0.type?.localizedCaseInsensitiveContains(searchText) == true
+                }
+            }
+            
+            // Apply cuisine filter
+            if selectedCuisine != "All" {
+                filtered = filtered.filter {
+                    $0.type == selectedCuisine
+                }
+            }
+            
+            // Apply parking filter
+            if showParkingOnly {
+                filtered = filtered.filter { $0.parkingLot }
+            }
+            
+            // Apply sorting
+//            filtered.sort { r1, r2 in
+//                switch selectedSort {
+//                case .name:
+//                    return (r1.name ?? "") < (r2.name ?? "")
+//                case .type:
+//                    return (r1.type ?? "") < (r2.type ?? "")
+//                }
+//            }
+            
+            filteredRestaurants = filtered
+        }
+        
+        func refresh() async {
+            await loadRestaurants()
+        }
     
 }

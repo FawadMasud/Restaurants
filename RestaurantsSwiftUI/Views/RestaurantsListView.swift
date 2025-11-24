@@ -26,7 +26,7 @@ struct RestaurantsListView: View {
                 }
                 else
                 {
-                    List(viewModel.restaurants) {
+                    List(viewModel.filteredRestaurants) {
                         
                         restaurant in
                         
@@ -40,6 +40,15 @@ struct RestaurantsListView: View {
             }
         }
         .navigationTitle("Restaurants")
+        .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            UserProfileButton()
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            FilterButton(viewModel: viewModel)
+                        }
+                    }
+        .searchable(text: $viewModel.searchText, prompt: "Search restaurants or cuisines")
         .refreshable {
             await viewModel.loadRestaurants()
         }
