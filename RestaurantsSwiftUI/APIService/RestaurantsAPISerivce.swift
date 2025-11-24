@@ -7,11 +7,7 @@
 
 import Foundation
 
-
-
 class RestaurantsAPISerivce: ObservableObject {
-    
-    private let baseUrl = "https://fakerestaurantapi.runasp.net/api/"
     
     private var headers:[String:String] {
         ["":""]
@@ -86,7 +82,4 @@ class RestaurantsAPISerivce: ObservableObject {
         
         return try JSONDecoder().decode([MenuItemAPI].self, from: data)
     }
-    
-    
-    
 }
